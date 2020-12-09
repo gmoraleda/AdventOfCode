@@ -27,7 +27,7 @@ class PasswordPolicy {
 }
 
 main() {
-  var path = 'input2.txt';
+  var path = './2020/input2.txt';
   final file = new File(path);
   final List<String> list = file.readAsLinesSync();
   final List<PasswordPolicy> policies = list.map((e) {
