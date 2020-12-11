@@ -21,7 +21,6 @@ main() {
   print(part1Count);
 
   // Part 2
-
   var part2count = 0;
   groups.forEach((element) {
     var answers = element.split('\n');
