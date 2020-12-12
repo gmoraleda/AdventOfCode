@@ -59,7 +59,6 @@ main() {
     }
   }
 
-  // print(mapPartTwo);
   findBags('shiny gold');
   print(count);
 }
