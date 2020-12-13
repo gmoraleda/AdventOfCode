@@ -18,7 +18,6 @@ main() {
     clone[jumps[i]].a.first = 'nop';
     iterateList(clone);
   }
-  ;
 }
 
 List<int> iterateList(List<Pair<List<String>, bool>> list) {
