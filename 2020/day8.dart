@@ -11,9 +11,7 @@ main() {
       }).toList();
 
   final original = generateList();
-
-  var list = original;
-  var jumps = iterateList(list);
+  var jumps = iterateList(original);
 
   for (var i = 0; i < jumps.length; i++) {
     var clone = generateList();
