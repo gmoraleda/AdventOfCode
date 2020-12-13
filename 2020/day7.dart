@@ -8,30 +8,31 @@ main() {
 
   var regex = RegExp(r"(\w+\s\w+)(?=\s+bag)");
 
-  var map = Map<String, List<String>>();
+  var mapPartOne = Map<String, List<String>>();
 
   for (var line in lines) {
     var matches = regex.allMatches(line).map((e) => e.group(0)).toList();
-    map[matches.first] = matches.sublist(1).toList();
+    mapPartOne[matches.first] = matches.sublist(1).toList();
   }
 
   // Part 1
-  var masterBags = Set<String>();
+  var parentBags = Set<String>();
   void lookFor(String bag) {
-    var keyList = map.keys.where((key) => map[key].contains(bag)).toList();
+    var keyList =
+        mapPartOne.keys.where((key) => mapPartOne[key].contains(bag)).toList();
 
     if (keyList.isNotEmpty) {
-      masterBags.addAll(keyList);
+      parentBags.addAll(keyList);
       keyList.forEach(lookFor);
     }
   }
 
   lookFor('shiny gold');
-  print(masterBags.length);
+  print(parentBags.length);
 
   // Part 2
   regex = RegExp(r"(\d{0,}\s?\w+\s\w+)(?=\s+bag)");
-  var mapB = Map<String, List<Pair<int, String>>>();
+  var mapPartTwo = Map<String, List<Pair<int, String>>>();
   for (var line in lines) {
     var matches = regex.allMatches(line).map((e) => e.group(0)).toList();
     var content = matches.sublist(1).map((e) {
@@ -43,33 +44,33 @@ main() {
       }
     }).toList();
     content.removeWhere((value) => value == null);
-    mapB[matches.first] = content;
+    mapPartTwo[matches.first] = content;
   }
-  var count = 0;
+  var childCount = 0;
   void findBags(String bag) {
-    if (mapB.keys.contains(bag) == false || mapB[bag].isEmpty) {
+    if (mapPartTwo.keys.contains(bag) == false || mapPartTwo[bag].isEmpty) {
       return;
     } else {
-      mapB[bag].forEach((element) {
-        count += element.a;
-        for (var i = 0; i < element.a; i++) {
-          findBags(element.b);
+      mapPartTwo[bag].forEach((element) {
+        childCount += element.n;
+        for (var i = 0; i < element.n; i++) {
+          findBags(element.color);
         }
       });
     }
   }
 
   findBags('shiny gold');
-  print(count);
+  print(childCount);
 }
 
 class Pair<T1, T2> {
-  final T1 a;
-  final T2 b;
+  final T1 n;
+  final T2 color;
 
-  Pair(this.a, this.b);
+  Pair(this.n, this.color);
   @override
   String toString() {
-    return "\n$a - $b";
+    return "\n$n - $color";
   }
 }
