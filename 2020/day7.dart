@@ -1,7 +1,7 @@
 import 'dart:io';
 
 main() {
-  var path = './2020/input7.txt';
+  var path = 'input7.txt';
 
   final file = new File(path);
   final lines = file.readAsLinesSync();

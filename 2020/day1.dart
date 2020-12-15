@@ -1,7 +1,7 @@
 import 'dart:io';
 
 main() {
-  var path = './2020/input.txt';
+  var path = 'input.txt';
   final file = new File(path);
   final List<int> list =
       file.readAsLinesSync().map((e) => int.parse(e)).toList();

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 main() {
-  var path = './2020/input5.txt';
+  var path = 'input5.txt';
 
   final file = new File(path);
   final List<String> list = file.readAsLinesSync();
