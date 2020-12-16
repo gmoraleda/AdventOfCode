@@ -6,16 +6,18 @@ main() {
   final file = new File(path);
   final input = file.readAsLinesSync().map((e) => e.split('')).toList();
 
-  var output = update(input);
+  var output = partOne(input);
+  // var output = partTwo(input);
 
   while (true) {
-    var temp = update(output);
+    var temp = partOne(output);
+    // var temp = partTwo(output);
     output = temp;
     print('${countSeats(output)}');
   }
 }
 
-List<List<String>> update(List<List<String>> input) {
+List<List<String>> partOne(List<List<String>> input) {
   final List<List<String>> copy =
       input.map((element) => List<String>.from(element)).toList();
 
@@ -26,10 +28,14 @@ List<List<String>> update(List<List<String>> input) {
           copy[i][j] = '.';
           continue;
         case 'L':
-          copy[i][j] = sit(input, i, j, "L");
+          if (isAvailablePartOne(input, i, j)) {
+            copy[i][j] = '#';
+          }
           continue;
         case '#':
-          copy[i][j] = sit(input, i, j, "#");
+          if (standPartOne(input, i, j)) {
+            copy[i][j] = 'L';
+          }
           continue;
       }
     }
@@ -37,66 +43,111 @@ List<List<String>> update(List<List<String>> input) {
   return copy;
 }
 
-String sit(List<List<String>> input, int i, int j, String mode) {
-  var count = 0;
-  var sit = true;
+List<List<String>> partTwo(List<List<String>> input) {
+  final List<List<String>> copy =
+      input.map((element) => List<String>.from(element)).toList();
 
-  // Right
-  if (input.tryGet(i, j + 1) != null && input[i][j + 1] == '#') {
-    count++;
-    sit = false;
+  for (var i = 0; i < input.length; i++) {
+    for (var j = 0; j < input.first.length; j++) {
+      switch (input[i][j]) {
+        case '.':
+          copy[i][j] = '.';
+          continue;
+        case 'L':
+          if (isAvailable(input, i, j)) {
+            copy[i][j] = "#";
+          }
+          continue;
+        case '#':
+          if (stand(input, i, j)) {
+            copy[i][j] = "L";
+          }
+          continue;
+      }
+    }
   }
-  // Left
-  if (input.tryGet(i, j - 1) != null && input[i][j - 1] == '#') {
-    count++;
-    sit = false;
-  }
-  // Up
-  if (input.tryGet(i - 1, j) != null && input[i - 1][j] == '#') {
-    count++;
-    sit = false;
-  }
-  // Down
-  if (input.tryGet(i + 1, j) != null && input[i + 1][j] == '#') {
-    count++;
-    sit = false;
-  }
-  // Up-Right
-  if (input.tryGet(i - 1, j + 1) != null && input[i - 1][j + 1] == '#') {
-    count++;
-    sit = false;
-  }
-  // Up-Left
-  if (input.tryGet(i - 1, j - 1) != null && input[i - 1][j - 1] == '#') {
-    count++;
-    sit = false;
-  }
-  // Down-Right
-  if (input.tryGet(i + 1, j + 1) != null && input[i + 1][j + 1] == '#') {
-    count++;
-    sit = false;
-  }
-  // Down-Left
-  if (input.tryGet(i + 1, j - 1) != null && input[i + 1][j - 1] == '#') {
-    count++;
-    sit = false;
-  }
+  return copy;
+}
 
-  if (mode == "#") {
-    if (count >= 4) {
-      return 'L';
-    } else if (input[i][j] == '.') {
-      return '.';
-    }
-    return '#';
-  } else {
-    if (sit) {
-      return '#';
-    } else if (input[i][j] == '.') {
-      return '.';
-    }
-    return 'L';
+String check(
+    List<List<String>> input, int currentI, int dI, int currentJ, int dJ) {
+  if (input.tryGet(currentI + dI, currentJ + dJ) == null) {
+    return null;
   }
+  return input[currentI + dI][currentJ + dJ];
+}
+
+bool isAvailablePartOne(List<List<String>> input, int i, int j) {
+  var up = check(input, i, -1, j, 0);
+  var down = check(input, i, 1, j, 0);
+  var right = check(input, i, 0, j, 1);
+  var left = check(input, i, 0, j, -1);
+  var upRight = check(input, i, -1, j, 1);
+  var downRight = check(input, i, 1, j, 1);
+  var upLeft = check(input, i, -1, j, -1);
+  var downLeft = check(input, i, 1, j, -1);
+
+  return [up, down, right, left, upRight, downRight, upLeft, downLeft]
+      .where((element) => element == "#")
+      .isEmpty;
+}
+
+bool standPartOne(List<List<String>> input, int i, int j) {
+  var up = check(input, i, -1, j, 0);
+  var down = check(input, i, 1, j, 0);
+  var right = check(input, i, 0, j, 1);
+  var left = check(input, i, 0, j, -1);
+  var upRight = check(input, i, -1, j, 1);
+  var downRight = check(input, i, 1, j, 1);
+  var upLeft = check(input, i, -1, j, -1);
+  var downLeft = check(input, i, 1, j, -1);
+
+  return [up, down, right, left, upRight, downRight, upLeft, downLeft]
+          .where((element) => element == "#")
+          .length >=
+      4;
+}
+
+String move(
+    List<List<String>> input, int currentI, int dI, int currentJ, int dJ) {
+  if (input.tryGet(currentI + dI, currentJ + dJ) == null) {
+    return null;
+  }
+  if (input.tryGet(currentI + dI, currentJ + dJ) != '.') {
+    return input[currentI + dI][currentJ + dJ];
+  }
+  return move(input, currentI + dI, dI, currentJ + dJ, dJ);
+}
+
+bool isAvailable(List<List<String>> input, int i, int j) {
+  var up = move(input, i, -1, j, 0);
+  var down = move(input, i, 1, j, 0);
+  var right = move(input, i, 0, j, 1);
+  var left = move(input, i, 0, j, -1);
+  var upRight = move(input, i, -1, j, 1);
+  var downRight = move(input, i, 1, j, 1);
+  var upLeft = move(input, i, -1, j, -1);
+  var downLeft = move(input, i, 1, j, -1);
+
+  return [up, down, right, left, upRight, downRight, upLeft, downLeft]
+      .where((element) => element == "#")
+      .isEmpty;
+}
+
+bool stand(List<List<String>> input, int i, int j) {
+  var up = move(input, i, -1, j, 0);
+  var down = move(input, i, 1, j, 0);
+  var right = move(input, i, 0, j, 1);
+  var left = move(input, i, 0, j, -1);
+  var upRight = move(input, i, -1, j, 1);
+  var downRight = move(input, i, 1, j, 1);
+  var upLeft = move(input, i, -1, j, -1);
+  var downLeft = move(input, i, 1, j, -1);
+
+  return [up, down, right, left, upRight, downRight, upLeft, downLeft]
+          .where((element) => element == "#")
+          .length >=
+      5;
 }
 
 void printArray(List<List<String>> input) {
