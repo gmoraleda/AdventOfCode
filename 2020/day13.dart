@@ -11,7 +11,6 @@ main() {
   final buses = input.last
       .split(',')
       .map((e) => int.tryParse(e))
-      .toList()
       .where((element) => element != null)
       .toList();
 
