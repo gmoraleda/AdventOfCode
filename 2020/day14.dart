@@ -85,8 +85,6 @@ List<String> fillLength(List<String> binary) {
   return List.generate(36 - binary.length, (index) => '0') + binary;
 }
 
-// Part II
-
 List<List<String>> calculateVariations(List<String> list) {
   var result = List<List<String>>();
   void fillFloatingBits(List<String> list, {int index = 0}) {
