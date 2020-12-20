@@ -13,8 +13,6 @@ void partOne(List<int> input, List spoken) {
     } else {
       var lastIndex = spoken.lastIndexOf(lastSpoken);
       var previousIndex = spoken.lastIndexOf(lastSpoken, lastIndex - 1);
-      lastIndex++;
-      previousIndex++;
       spoken.add(lastIndex - previousIndex);
     }
   }
