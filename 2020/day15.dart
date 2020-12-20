@@ -6,7 +6,7 @@ main() {
 }
 
 void partOne(List<int> input, List spoken) {
-  for (var i = input.length; i < 30000000; i++) {
+  for (var i = input.length; i < 2020; i++) {
     final lastSpoken = spoken.last;
     if (spoken.findOccurrences(lastSpoken) == 1) {
       spoken.add(0);
