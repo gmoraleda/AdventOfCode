@@ -1,3 +1,4 @@
 name: advent2020
 dependencies:
   vector_math: ^2.0.8
+  equatable: ^1.2.5
