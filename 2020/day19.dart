@@ -5,59 +5,41 @@ main() {
 
   final file = new File(path);
   final input = file.readAsStringSync().split('\n\n');
-  final rules = input.first.split('\n');
   final messages = input.last.split('\n');
 
   final regex = RegExp(r'(\d+?): (.*)');
 
-  Map<String, List<String>> ruleMap = Map.fromIterable(rules,
+  Map<String, String> rules = Map.fromIterable(input.first.split('\n'),
       key: (v) => regex.firstMatch(v).group(1),
-      value: (v) => regex.firstMatch(v).group(2).split(' | ').toList());
+      value: (v) => regex.firstMatch(v).group(2));
 
-  print(ruleMap);
+  var computedRules = Map<String, String>();
 
-  final aKey =
-      ruleMap.keys.firstWhere((element) => ruleMap[element].contains("\"a\""));
-  ruleMap[aKey] = ["a"];
-  final bKey =
-      ruleMap.keys.firstWhere((element) => ruleMap[element].contains("\"b\""));
-  ruleMap[bKey] = ["b"];
-
-  // Initial Substitution
-  final digitRegex = new RegExp(r'(\b\d+?\b)');
-  ruleMap.updateAll((key, value) {
-    return value
-        .map((e) => e
-            .replaceAll(RegExp("\\b(${aKey})\\b"), "a")
-            .replaceAll(RegExp("\\b(${bKey})\\b"), "b"))
-        .toList();
-  });
-
-  while (ruleMap["0"].any((element) => element.contains(digitRegex))) {
-    for (var entry in ruleMap.entries.where((element) =>
-        element.value.any((element) => digitRegex.hasMatch(element)))) {
-      var newValue = List<String>();
-      entry.value.forEach((element) {
-        if (digitRegex.hasMatch(element)) {
-          final key = digitRegex.firstMatch(element).group(1);
-          ruleMap[key].forEach((e) {
-            newValue.add(element.replaceAll(key, e));
-          });
-        }
-      });
-
-      ruleMap[entry.key] = newValue;
+  String computeRule(String rule, Map<String, String> rules) {
+    if (computedRules[rule] != null) {
+      return computedRules[rule];
     }
+    var result = '';
+    if (rule.contains("\"")) {
+      result = rule.replaceAll("\"", '');
+    } else if (rule.contains("|")) {
+      result =
+          '(${computeRule(rule.split(" | ").first, rules)}|${computeRule(rule.split(" | ").last, rules)})';
+    } else {
+      final keys = rule.split(' ');
+      result = keys.map((e) => computeRule(rules[e], rules)).join();
+    }
+    computedRules[rule] = result;
+    return result;
   }
 
-  final spacedMessages =
-      messages.map((e) => e.split('').join(' ').trim()).toList();
-  final dictionary = Map.fromIterable(ruleMap["0"]);
-  print(spacedMessages.first);
+  computeRule(rules["0"], rules);
 
-  var validCounter = 0;
-  for (var message in spacedMessages) {
-    if (dictionary[message] != null) validCounter++;
+  var count = 0;
+  final masterRegex = RegExp('^${computedRules[rules["0"]]}\$');
+
+  for (var message in messages) {
+    if (masterRegex.hasMatch(message)) count++;
   }
-  print(validCounter);
+  print(count);
 }
