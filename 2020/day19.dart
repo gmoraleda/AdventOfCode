@@ -36,10 +36,34 @@ main() {
   computeRule(rules["0"], rules);
 
   var count = 0;
-  final masterRegex = RegExp('^${computedRules[rules["0"]]}\$');
+  final partOneRegex = RegExp('^${computedRules[rules["0"]]}\$');
 
   for (var message in messages) {
-    if (masterRegex.hasMatch(message)) count++;
+    if (partOneRegex.hasMatch(message)) count++;
+  }
+  print(count);
+
+  rules["0"] = "8 11";
+  rules["8"] = "42 | 42 8";
+  rules["11"] = "42 31 | 42 11 31";
+
+  computedRules.clear();
+  computeRule(rules["42"], rules);
+  computeRule(rules["31"], rules);
+
+  final partTwoRegex = RegExp(
+      '^(?<group42>(${computedRules[rules["42"]]})+)(?<group31>(${computedRules[rules["31"]]})+)\$');
+  count = 0;
+
+  for (var message in messages) {
+    if (partTwoRegex.allMatches(message).any((element) {
+      final group42 = element.namedGroup("group42").length;
+      final group31 = element.namedGroup("group31").length;
+
+      return group42 > group31;
+    })) {
+      count++;
+    }
   }
   print(count);
 }
