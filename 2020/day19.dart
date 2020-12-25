@@ -56,13 +56,12 @@ main() {
   count = 0;
 
   for (var message in messages) {
-    if (partTwoRegex.allMatches(message).any((element) {
-      final group42 = element.namedGroup("group42").length;
-      final group31 = element.namedGroup("group31").length;
+    var match = partTwoRegex.firstMatch(message);
+    if (match != null) {
+      final group42 = match.namedGroup("group42").length;
+      final group31 = match.namedGroup("group31").length;
 
-      return group42 > group31;
-    })) {
-      count++;
+      if (group42 > group31) count++;
     }
   }
   print(count);
