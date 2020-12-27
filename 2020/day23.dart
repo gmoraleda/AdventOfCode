@@ -1,69 +1,136 @@
+import 'dart:collection';
+import 'dart:math';
+
+class CupEntry extends LinkedListEntry<CupEntry> {
+  final value;
+  CupEntry({
+    this.value,
+  });
+  @override
+  String toString() {
+    return value.toString();
+  }
+}
+
 main() {
-  final input = "389125467";
+  final input = "942387615";
 
+  partOne(input);
+  partTwo(input);
+}
+
+void partOne(String input) {
   final cups = input.split('').map((e) => int.parse(e)).toList();
-  final newCups = List.generate(1000000 - cups.length, (index) => index + 10);
-  final partTwoCups = cups + newCups;
+  final inputMax = cups.reduce(max);
 
-  var currentCup = cups.first;
-  void move(List<int> cups) {
-    // print(cups.map((e) {
-    //   if (currentCup == e) {
-    //     return "($e)";
-    //   } else {
-    //     return " $e ";
-    //   }
-    // }));
+  var valueToCup = Map<int, CupEntry>();
+  final linkedList = LinkedList<CupEntry>()
+    ..addAll(cups.map((e) {
+      final cup = CupEntry(value: e);
+      valueToCup[e] = cup;
+      return cup;
+    }));
 
-    final currentCupIndex = cups.indexOf(currentCup);
-    final selectedCups = cups.getCups((currentCupIndex + 1) % cups.length,
-        (currentCupIndex + 4) % cups.length);
+  var currentCup = linkedList.first;
 
-    // print('pick up: $selectedCups');
+  void move() {
+    print('Current cup: $currentCup');
+    print('Cups: $linkedList');
 
-    var destination = (currentCup - 1);
-    while (selectedCups.contains(destination) || destination <= 0) {
-      destination = (destination - 1) % (cups.length + 1);
+    var selectedCups = List<CupEntry>();
+    var indexCup = currentCup;
+
+    for (var i = 0; i < 3; i++) {
+      final cup = indexCup.next ?? linkedList.first;
+      indexCup = cup;
+      selectedCups.add(cup);
+    }
+    final selectedCupsValues = selectedCups.map((e) => e.value);
+    print('Selected: $selectedCups');
+
+    for (var cup in selectedCups) {
+      cup.unlink();
     }
 
-    // print('destination: $destination');
+    var destinationCup =
+        valueToCup[currentCup.value - 1] ?? valueToCup[inputMax];
 
-    cups.removeWhere((element) => selectedCups.contains(element));
-    // print(cups);
+    while (selectedCupsValues.contains(destinationCup.value)) {
+      print('Updating destination cup: $destinationCup');
+      destinationCup =
+          valueToCup[destinationCup.value - 1] ?? valueToCup[inputMax];
+    }
+    print('Destination: $destinationCup\n');
 
-    final destinationCupIndex = cups.indexOf(destination);
-    cups.insertAll((destinationCupIndex + 1), selectedCups);
-    // print(cups);
+    destinationCup.insertAfter(selectedCups.first);
+    selectedCups.first.insertAfter(selectedCups[1]);
+    selectedCups[1].insertAfter(selectedCups.last);
 
-    final newCurrentCupIndex = cups.indexOf(currentCup);
-    currentCup = cups[(newCurrentCupIndex + 1) % cups.length];
+    currentCup = currentCup.next ?? linkedList.first;
   }
 
   for (var i = 0; i < 100; i++) {
-    move(cups);
+    move();
   }
-  print(cups.rotate(cups.indexOf(1) + 1).join().replaceAll('1', ''));
-
-  // for (var i = 0; i < 10000000; i++) {
-  //   move(partTwoCups);
-  // }
-  // print(cups[cups.indexOf(1) + 1] * cups[cups.indexOf(1) + 2]);
+  var finalCup = valueToCup[1].next;
+  var result = '';
+  for (var i = 0; i < 7; i++) {
+    result += finalCup.value.toString();
+    finalCup = finalCup.next ?? linkedList.first;
+  }
+  print(result);
 }
 
-extension Cups on List {
-  List<int> getCups(int start, int end) {
-    if (start > end) {
-      final partA = this.sublist(start);
-      final partB = this.sublist(0, end);
-      return partA + partB;
-    } else {
-      return this.sublist(start, end);
+void partTwo(String input) {
+  final cups = input.split('').map((e) => int.parse(e)).toList();
+  final newCups = List.generate(1000000 - cups.length, (index) => index + 10);
+  final partTwoCups = cups + newCups;
+  final inputMax = partTwoCups.reduce(max);
+
+  var valueToCup = Map<int, CupEntry>();
+  final linkedList = LinkedList<CupEntry>()
+    ..addAll(partTwoCups.map((e) {
+      final cup = CupEntry(value: e);
+      valueToCup[e] = cup;
+      return cup;
+    }));
+
+  var currentCup = linkedList.first;
+
+  void move() {
+    var selectedCups = List<CupEntry>();
+    var indexCup = currentCup;
+
+    for (var i = 0; i < 3; i++) {
+      final cup = indexCup.next ?? linkedList.first;
+      indexCup = cup;
+      selectedCups.add(cup);
     }
+    final selectedCupsValues = selectedCups.map((e) => e.value);
+    for (var cup in selectedCups) {
+      cup.unlink();
+    }
+
+    var destinationCup =
+        valueToCup[currentCup.value - 1] ?? valueToCup[inputMax];
+
+    while (selectedCupsValues.contains(destinationCup.value)) {
+      destinationCup =
+          valueToCup[destinationCup.value - 1] ?? valueToCup[inputMax];
+    }
+
+    destinationCup.insertAfter(selectedCups.first);
+    selectedCups.first.insertAfter(selectedCups[1]);
+    selectedCups[1].insertAfter(selectedCups.last);
+
+    currentCup = currentCup.next ?? linkedList.first;
   }
 
-  List<Object> rotate(int v) {
-    if (this == null || this.isEmpty) return this;
-    var i = v % this.length;
-    return this.sublist(i)..addAll(this.sublist(0, i));
+  for (var i = 0; i < 10000000; i++) {
+    move();
   }
+
+  var firstFinalCup = valueToCup[1].next;
+  var secondFinalCup = valueToCup[firstFinalCup.value].next;
+  print(firstFinalCup.value * secondFinalCup.value);
 }
