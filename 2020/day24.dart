@@ -22,134 +22,96 @@ main() {
     instructions.add(lineDirections);
   }
 
-  final tileList = List<Tile>()..add(Tile());
+  final flippedTiles = Set<String>();
+
   for (var instructionList in instructions) {
-    var currentTile = tileList.first;
+    var referenceTile = Tile();
+    referenceTile.x = 0;
+    referenceTile.y = 0;
+
     for (var i = 0; i < instructionList.length; i++) {
       final flip = i == instructionList.length - 1;
       final direction = instructionList[i];
 
       switch (direction) {
         case Direction.e:
-          if (currentTile.e != null) {
-            currentTile.e.flip =
-                flip ? !currentTile.e.flip : currentTile.e.flip;
-          } else {
-            var newTile = Tile();
-            currentTile.e = newTile;
-
-            newTile.w = currentTile;
-            newTile.nw = currentTile.ne;
-            newTile.sw = currentTile.se;
-            tileList.add(newTile);
-
-            currentTile.e.flip =
-                flip ? !currentTile.e.flip : currentTile.e.flip;
-          }
-          currentTile = currentTile.e;
+          referenceTile.x += 2;
           break;
-
         case Direction.se:
-          if (currentTile.se != null) {
-            currentTile.se.flip =
-                flip ? !currentTile.se.flip : currentTile.se.flip;
-          } else {
-            var newTile = Tile();
-            currentTile.se = newTile;
-
-            newTile.nw = currentTile;
-            newTile.ne = currentTile.e;
-            newTile.w = currentTile.sw;
-            tileList.add(newTile);
-
-            currentTile.se.flip =
-                flip ? !currentTile.se.flip : currentTile.se.flip;
-          }
-          currentTile = currentTile.se;
+          referenceTile.x += 1;
+          referenceTile.y -= 1;
           break;
         case Direction.sw:
-          if (currentTile.sw != null) {
-            currentTile.sw.flip =
-                flip ? !currentTile.sw.flip : currentTile.sw.flip;
-          } else {
-            var newTile = Tile();
-            currentTile.sw = newTile;
-
-            newTile.ne = currentTile;
-            newTile.e = currentTile.se;
-            newTile.nw = currentTile.w;
-            tileList.add(newTile);
-
-            currentTile.sw.flip =
-                flip ? !currentTile.sw.flip : currentTile.sw.flip;
-          }
-          currentTile = currentTile.sw;
+          referenceTile.x -= 1;
+          referenceTile.y -= 1;
           break;
         case Direction.w:
-          if (currentTile.w != null) {
-            currentTile.w.flip =
-                flip ? !currentTile.w.flip : currentTile.w.flip;
-          } else {
-            var newTile = Tile();
-            currentTile.w = newTile;
-
-            newTile.e = currentTile;
-            newTile.se = currentTile.sw;
-            newTile.ne = currentTile.nw;
-            tileList.add(newTile);
-
-            currentTile.w.flip =
-                flip ? !currentTile.w.flip : currentTile.w.flip;
-          }
-          currentTile = currentTile.w;
+          referenceTile.x -= 2;
           break;
         case Direction.nw:
-          if (currentTile.nw != null) {
-            currentTile.nw.flip =
-                flip ? !currentTile.nw.flip : currentTile.nw.flip;
-          } else {
-            var newTile = Tile();
-            currentTile.nw = newTile;
-
-            newTile.se = currentTile;
-            newTile.sw = currentTile.w;
-            newTile.e = currentTile.nw;
-            tileList.add(newTile);
-
-            currentTile.nw.flip =
-                flip ? !currentTile.nw.flip : currentTile.nw.flip;
-          }
-          currentTile = currentTile.nw;
+          referenceTile.x -= 1;
+          referenceTile.y += 1;
           break;
         case Direction.ne:
-          if (currentTile.ne != null) {
-            currentTile.ne.flip =
-                flip ? !currentTile.ne.flip : currentTile.ne.flip;
-          } else {
-            var newTile = Tile();
-            currentTile.ne = newTile;
-
-            newTile.sw = currentTile;
-            newTile.se = currentTile.e;
-            newTile.w = currentTile.nw;
-            tileList.add(newTile);
-
-            currentTile.ne.flip =
-                flip ? !currentTile.ne.flip : currentTile.ne.flip;
-          }
-          currentTile = currentTile.ne;
+          referenceTile.x += 1;
+          referenceTile.y += 1;
           break;
       }
-    }
-    print(tileList);
-  }
 
-  var count = 0;
-  for (var tile in tileList) {
-    count += tile.flip ? 1 : 0;
+      if (flip) {
+        if (flippedTiles.contains(referenceTile.toString()))
+          flippedTiles.remove(referenceTile.toString());
+        else
+          flippedTiles.add(referenceTile.toString());
+      }
+    }
   }
-  print(count);
+  print('Part I: ${flippedTiles.length}');
+
+  for (var i = 1; i <= 100; i++) {
+    var tilesToRemove = Set<String>();
+    var tilesToAdd = Set<String>();
+
+    for (var tileString in flippedTiles) {
+      var blackCount = 0;
+      var tile = Tile.fromString(tileString);
+
+      tile.neighbours.forEach((neighbour) {
+        // Black
+        if (flippedTiles.contains(neighbour.toString())) {
+          blackCount++;
+        } else {
+          // White
+          var toAddCount = 0;
+          neighbour.neighbours.forEach((neighboursNeighbour) {
+            if (flippedTiles.contains(neighboursNeighbour.toString()))
+              toAddCount++;
+          });
+          if (toAddCount == 2) {
+            tilesToAdd.add(neighbour.toString());
+          }
+        }
+      });
+
+      if (blackCount == 0 || blackCount > 2) {
+        tilesToRemove.add(tile.toString());
+      }
+    }
+
+    flippedTiles.removeAll(tilesToRemove);
+    flippedTiles.addAll(tilesToAdd);
+
+    print('Day $i: ${flippedTiles.length}');
+  }
 }
+
+/* 
+--------(-1,1)---|---(1,1)---------
+           |     |     |
+--(-2,0)-------(0,0)-------(2,0)---
+           |     |     |
+-------(-1,-1)---|---(1,-1)--------
+*/
 
 enum Direction { e, se, sw, w, nw, ne }
 
@@ -162,17 +124,32 @@ extension EnumParser on String {
 }
 
 class Tile {
-  bool flip = false;
-
-  Tile e;
-  Tile se;
-  Tile sw;
-  Tile w;
-  Tile nw;
-  Tile ne;
+  int x;
+  int y;
+  Tile({
+    this.x,
+    this.y,
+  });
+  Tile.fromString(String string) {
+    this.x = int.parse(string.split(':').first);
+    this.y = int.parse(string.split(':').last);
+  }
 
   @override
   String toString() {
-    return flip.toString();
+    return "$x:$y";
+  }
+
+  List<Tile> get neighbours {
+    var list = List<Tile>();
+
+    list.add(Tile(x: this.x + 2, y: this.y));
+    list.add(Tile(x: this.x + 1, y: this.y - 1));
+    list.add(Tile(x: this.x - 1, y: this.y - 1));
+    list.add(Tile(x: this.x - 2, y: this.y));
+    list.add(Tile(x: this.x - 1, y: this.y + 1));
+    list.add(Tile(x: this.x + 1, y: this.y + 1));
+
+    return list;
   }
 }
