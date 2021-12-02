@@ -1,4 +1,4 @@
-file = File.open('2021/d1.txt')
+file = File.open('2021/01/input')
 depths = file_data = file.readlines.map(&:to_i)
 
 ## Part 1
@@ -22,13 +22,11 @@ depths.each_with_index do |depth, index|
 
   sum_a = a + b + c
 
-  d = depths[index + 1]
-  e = depths[index + 2]
-  f = depths[index + 3]
+  d = depths[index + 3]
 
-  next if (d.nil? || e.nil? || f.nil?)
+  next if (b.nil? || c.nil? || d.nil?)
 
-  sum_b = d + e + f
+  sum_b = b + c + d
 
   sum_b > sum_a ? higher += 1 : higher += 0
 end
