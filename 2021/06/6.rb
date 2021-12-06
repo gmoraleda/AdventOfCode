@@ -5,8 +5,6 @@ fishes =
   file_data =
     file.readlines.map(&:strip).map { |line| line.split(',') }.first.map(&:to_i)
 
-sorted_fishes = fishes.sort
-
 hash = [0, 1, 2, 3, 4, 5, 6, 7, 8].to_h { |x| [x, 0] }
 
 for fish in fishes
