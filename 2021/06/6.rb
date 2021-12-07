@@ -25,4 +25,4 @@ for d in 0...days
   hash[8] = new_fishes
 end
 
-puts "Part 1: #{hash.values.sum}"
+puts "Part 1: #{hash.values.min}"
