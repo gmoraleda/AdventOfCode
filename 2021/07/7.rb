@@ -27,16 +27,18 @@ puts "Part 1: #{hash.values.min}"
 # Part 2
 
 def calc_fuel(x, y)
-  origin = [x, y].min
-  destination = [x, y].max
+  # origin = [x, y].min
+  # destination = [x, y].max
+  # sum = 0
+  # x = 1
+  # for i in origin...destination
+  #   sum += x
+  #   x += 1
+  # end
+  # return sum
 
-  sum = 0
-  x = 1
-  for i in origin...destination
-    sum += x
-    x += 1
-  end
-  return sum
+  n = (x - y).abs
+  return n * (1 + n) / 2
 end
 
 hash = {}
