@@ -55,55 +55,29 @@ puts 'Part 1: ' +
 
 # Part 2
 
-levels = Array.new
-for level in 0..9
-  level_board = Array.new(board.length) { Array.new(board.first.size) }
+def check(board, x, y, sum)
+  return sum if board[y][x] == 9
 
-  for i in 0..(board.length - 1)
-    for j in 0..(board.first.length - 1)
-      if board[i][j] == level
-        level_board[i][j] = board[i][j]
-      else
-        level_board[i][j] = nil
-      end
-    end
-  end
-  levels << level_board
-end
+  max_y = board.length - 1
+  max_x = board.first.length - 1
 
-def look_for_higher_level(levels, level, x, y, sum)
-  return sum if level == 9
+  return sum if (x < 0 || y < 0 || x >= max_x || y >= max_y)
 
-  max_y = levels[level].size - 1
-  max_x = levels[level].first.size - 1
+  sum += 1
 
-  current = levels[level]
-  if y + 1 <= max_y && current[y + 1][x].nil? == false
-    levels[level][y + 1][x] = nil
-    return look_for_higher_level(levels, level + 1, x, y + 1, sum + 1)
-  elsif x + 1 <= max_x && current[y][x + 1].nil? == false
-    levels[level][y][x + 1] = nil
-    return look_for_higher_level(levels, level + 1, x + 1, y, sum + 1)
-  elsif y - 1 >= 0 && current[y - 1][x].nil? == false
-    levels[level][y - 1][x] = nil
-    return look_for_higher_level(levels, level + 1, x, y - 1, sum + 1)
-  elsif x - 1 >= 0 && current[y][x - 1].nil? == false
-    levels[level][y][x - 1] = nil
-    return look_for_higher_level(levels, level + 1, x - 1, y, sum + 1)
-  end
-  return look_for_higher_level(levels, level + 1, x, y, sum)
+  return(
+    check(board, x + 1, y, sum) + check(board, x - 1, y, sum) +
+      check(board, x, y + 1, sum) + check(board, x, y - 1, sum)
+  )
 end
 
 basins = Array.new
-for level in 0..8
-  puts 'Level: ' + level.to_s
-  for i in 0..(levels[level].length - 1)
-    for j in 0..(levels[level].first.length - 1)
-      if levels[level][i][j].nil? == false
-        basin = look_for_higher_level(levels, level + 1, j, i, 1)
-        basins << basin
-      end
-    end
+
+for i in 0..(board.length - 1)
+  for j in 0..(board[i].length - 1)
+    basin = check(board, j, i, 0)
+    basins << basin
   end
 end
-pp basins.sort.reverse.slice(0, 3)
+
+pp basins
