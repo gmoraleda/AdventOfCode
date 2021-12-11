@@ -1,4 +1,4 @@
-require 'pp'
+require 'pry'
 file = File.open('11/test')
 board =
   file
@@ -8,47 +8,6 @@ board =
     .map { |line| line.map { |char| char.to_i } }
 
 flashes = 0
-
-def flash_neighbors(board, j, i)
-  j_max = board[0].length - 1
-  i_max = board.length - 1
-
-  board[i + 1][j] += 1 if i + 1 <= i_max
-  board[i - 1][j] += 1 if i - 1 >= 0
-  board[i][j + 1] += 1 if j + 1 <= j_max
-  board[i][j - 1] += 1 if j - 1 >= 0
-  board[i + 1][j + 1] += 1 if i + 1 <= i_max && j + 1 <= j_max
-  board[i - 1][j - 1] += 1 if i - 1 >= 0 && j - 1 >= 0
-  board[i - 1][j + 1] += 1 if i - 1 >= 0 && j + 1 <= j_max
-  board[i + 1][j - 1] += 1 if i + 1 <= i_max && j - 1 >= 0
-
-  return board
-end
-
-def check_flash(board, j, i, flashes)
-  j_max = board[0].length - 1
-  i_max = board.length - 1
-
-  return flashes if j > j_max || i > i_max || j < 0 || i < 0
-
-  if board[i][j] > 9
-    board[i][j] = 0
-
-    flashed = flash_neighbors(board, j, i)
-    pp flashed
-    return(
-      1 + check_flash(board, j + 1, i, 0) + check_flash(board, j - 1, i, 0) +
-        check_flash(board, j, i + 1, 0) + check_flash(board, j, i - 1, 0) +
-        check_flash(board, j + 1, i + 1, 0) +
-        check_flash(board, j - 1, i - 1, 0) +
-        check_flash(board, j - 1, i + 1, 0) +
-        check_flash(board, j + 1, i - 1, 0)
-    )
-  else
-    return flashes
-  end
-end
-
 hash = {}
 
 for i in 0..board.length - 1
@@ -57,23 +16,41 @@ for i in 0..board.length - 1
   end
 end
 
-flashes = 0
-for i in 0..3
+for i in 1..3
   hash.each { |key, value| hash[key] = value + 1 }
 
-  hash.each do |key, value|
-    if value > 9
-      hash[key] = 0
-      flashes += 1
-    end
-  end
+  while hash.values.any? { |value| value > 9 }
+    Pry::ColorPrinter.pp hash
 
-  while hash.values.max > 9
     hash.each do |key, value|
       if value > 9
+        hash[key] = 0
+        flashes += 1
+
+        i = key[0].to_i
+        j = key[1].to_i
+
+        neighbors = [
+          [i + 1, j],
+          [i - 1, j],
+          [i, j + 1],
+          [i, j - 1],
+          [i + 1, j + 1],
+          [i - 1, j - 1],
+          [i - 1, j + 1],
+          [i + 1, j - 1],
+        ]
+
+        neighbors =
+          neighbors.filter do |neighbor|
+            neighbor[0] < board.length && neighbor[1] < board[0].length &&
+              neighbor[0] >= 0 && neighbor[1] >= 0
+          end
+
+        neighbors.each { |neighbor| hash["#{neighbor[0]}#{neighbor[1]}"] += 1 }
       end
     end
   end
 end
 
-pp hash
+puts "Part 1: #{flashes}"
