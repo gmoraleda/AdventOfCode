@@ -1,4 +1,5 @@
 require 'pry'
+require 'pp'
 file = File.open('11/test')
 board =
   file
@@ -16,21 +17,22 @@ for i in 0..board.length - 1
   end
 end
 
-for i in 1..3
+for i in 0..2
   hash.each { |key, value| hash[key] = value + 1 }
 
-  while hash.values.any? { |value| value > 9 }
-    Pry::ColorPrinter.pp hash
+  octopus_to_flash = hash.select { |key, value| value > 9 }.keys
+  puts "octopus_to_flash: #{octopus_to_flash}"
 
-    hash.each do |key, value|
-      if value > 9
-        hash[key] = 0
-        flashes += 1
+  while octopus_to_flash.length > 0
+    flashes += octopus_to_flash.length
+    octopus_to_flash.each { |key| hash[key] = 0 }
+    flashed_neighbors = []
+    octopus_to_flash.each do |key|
+      i = key[0].to_i
+      j = key[1].to_i
 
-        i = key[0].to_i
-        j = key[1].to_i
-
-        neighbors = [
+      neighbors =
+        [
           [i + 1, j],
           [i - 1, j],
           [i, j + 1],
@@ -39,18 +41,21 @@ for i in 1..3
           [i - 1, j - 1],
           [i - 1, j + 1],
           [i + 1, j - 1],
-        ]
+        ].filter do |neighbor|
+          neighbor[0] < board.length && neighbor[1] < board[0].length &&
+            neighbor[0] >= 0 && neighbor[1] >= 0
+        end
 
-        neighbors =
-          neighbors.filter do |neighbor|
-            neighbor[0] < board.length && neighbor[1] < board[0].length &&
-              neighbor[0] >= 0 && neighbor[1] >= 0
-          end
-
-        neighbors.each { |neighbor| hash["#{neighbor[0]}#{neighbor[1]}"] += 1 }
-      end
+      flashed_neighbors.append(
+        neighbors.map { |neighbor| "#{neighbor[0]}#{neighbor[1]}" },
+      )
     end
+    flashed_neighbors.flatten!.each { |key| hash[key] += 1 }
+    octopus_to_flash = hash.select { |key, value| value > 9 }.keys
+    puts "Octopus to flash: #{octopus_to_flash}"
   end
+
+  # Flash neighbors
 end
 
 puts "Part 1: #{flashes}"
