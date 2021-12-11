@@ -2,7 +2,21 @@ require 'pry'
 require 'pp'
 require 'set'
 
-file = File.open('11/test')
+def log(obj)
+  Pry::ColorPrinter.pp(obj)
+end
+
+def hash_to_array(hash)
+  board = Array.new(10) { Array.new(10) }
+  hash.each do |key, value|
+    i = key[0].to_i
+    j = key[1].to_i
+    board[i][j] = value
+  end
+  log(board)
+end
+
+file = File.open('11/input')
 board =
   file
     .readlines
@@ -19,86 +33,54 @@ for i in 0..board.length - 1
   end
 end
 
-def log(obj)
-  Pry::ColorPrinter.pp(obj)
-end
-
-def hash_to_array(hash)
-  board = Array.new(10) { Array.new(10) }
-  hash.each do |key, value|
-    i = key[0].to_i
-    j = key[1].to_i
-    board[i][j] = value
-  end
-  log(board)
-end
-
-pp board
-for i in 0..1
+step = 0
+while true
+  step += 1
   hash.each { |key, value| hash[key] = value + 1 }
+  total_flashing_octopus = hash.select { |key, value| value > 9 }.keys.to_set
+  flashing_octopus = total_flashing_octopus
 
-  hash_to_array(hash)
+  while flashing_octopus.length > 0
+    flashed_neighbors = []
 
-  octopus_to_flash = hash.select { |key, value| value > 9 }.keys.to_set
-  flashed_neighbors = []
+    for octopus in flashing_octopus
+      i = octopus[0].to_i
+      j = octopus[1].to_i
 
-  for octopus in octopus_to_flash
-    i = octopus[0].to_i
-    j = octopus[1].to_i
+      neighbors =
+        [
+          [i + 1, j],
+          [i - 1, j],
+          [i, j + 1],
+          [i, j - 1],
+          [i + 1, j + 1],
+          [i - 1, j - 1],
+          [i - 1, j + 1],
+          [i + 1, j - 1],
+        ].filter do |neighbor|
+          neighbor[0] < board.length && neighbor[1] < board[0].length &&
+            neighbor[0] >= 0 && neighbor[1] >= 0
+        end
 
-    neighbors =
-      [
-        [i + 1, j],
-        [i - 1, j],
-        [i, j + 1],
-        [i, j - 1],
-        [i + 1, j + 1],
-        [i - 1, j - 1],
-        [i - 1, j + 1],
-        [i + 1, j - 1],
-      ].filter do |neighbor|
-        neighbor[0] < board.length && neighbor[1] < board[0].length &&
-          neighbor[0] >= 0 && neighbor[1] >= 0
-      end
+      flashed_neighbors.append(
+        neighbors.map { |neighbor| "#{neighbor[0]}#{neighbor[1]}" },
+      )
+    end
 
-    flashed_neighbors +=
-      neighbors.map { |neighbor| "#{neighbor[0]}#{neighbor[1]}" }
+    flashed_neighbors = flashed_neighbors.flatten! - total_flashing_octopus.to_a
+    flashed_neighbors.each { |neighbor| hash[neighbor] += 1 }
+
+    chained_flashing =
+      hash.select { |key, value| value > 9 }.keys.to_set -
+        total_flashing_octopus
+    total_flashing_octopus = total_flashing_octopus + chained_flashing
+    flashing_octopus = chained_flashing
   end
 
-  flashed_neibors = flashed_neighbors.flatten! - octopus_to_flash.to_a
-
-  flashed_neighbors.each { |neighbor| hash[neighbor] += 1 }
-
-  # keys = hash.select { |key, value| value > 9 }.keys
-
-  # log(keys)
-
-  log(octopus_to_flash)
+  total_flashing_octopus.each { |octopus| hash[octopus] = 0 }
+  flashes += total_flashing_octopus.length
+  break if total_flashing_octopus.length == hash.keys.length
 end
-
-log(octopus_to_flash)
-
-# while octopus_to_flash.length > 0
-#   flashes += octopus_to_flash.length
-
-#   octopus_to_flash.each do |key|
-#     value = hash[key]
-#     hash[key] = value % 10
-#   end
-
-#   flashed_neighbors = []
-#   octopus_to_flash.each do |key|
-#     flashed_neighbors.append(
-#       neighbors.map { |neighbor| "#{neighbor[0]}#{neighbor[1]}" },
-#     )
-
-#     flashed_neighbors = flashed_neighbors.flatten! - octopus_to_flash
-#   end
-#   flashed_neighbors.each { |key| hash[key] += 1 }
-#   octopus_to_flash =
-# end
-hash_to_array(hash)
-
-# Flash neighbors
 
 puts "Part 1: #{flashes}"
+puts "Part 2: #{step}"
