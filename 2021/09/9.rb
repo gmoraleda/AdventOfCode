@@ -58,8 +58,6 @@ puts 'Part 1: ' + lower_points.map { |point| point.value + 1 }.sum.to_s
 
 # Part 2
 
-basins = {}
-
 visited = board.clone
 
 def check(board, visited, x, y, marker)
