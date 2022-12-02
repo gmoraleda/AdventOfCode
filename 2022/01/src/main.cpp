@@ -7,7 +7,6 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    // Read file name from command line
     string filename = argv[1];
 
     vector<int> counters;
