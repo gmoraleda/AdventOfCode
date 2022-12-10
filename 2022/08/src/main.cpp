@@ -111,7 +111,6 @@ int main(int argc, char **argv)
         cout << "Count: " << count << endl;
 
         // Part II
-        // For each number in the grid, starting at the current number, check if the number on the left is smaller. If it is, increase the left count and continue with the next number. If it is greater or equal, increase the counter and stop. Repeat for the right, top and bottom.
 
         int highestValue = 0;
         for (int i = 0; i < height; i++)
