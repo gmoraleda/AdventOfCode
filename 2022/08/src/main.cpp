@@ -171,7 +171,6 @@ int main(int argc, char **argv)
                 }
 
                 int value = 1;
-                // Multiply values among them if they are not 0
                 if (leftCount != 0)
                 {
                     value *= leftCount;
