@@ -73,12 +73,12 @@ int main(int argc, char **argv)
 
     int points = 0;
 
-    std::ifstream file(filename);
+    ifstream file(filename);
     if (file.is_open())
     {
-        std::string line;
+        string line;
 
-        while (std::getline(file, line))
+        while (getline(file, line))
         {
             char player1 = line[0];
             char result = line[2];
@@ -89,6 +89,6 @@ int main(int argc, char **argv)
         }
         file.close();
 
-        std::cout << points << std::endl;
+        cout << points << endl;
     }
 }

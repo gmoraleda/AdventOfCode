@@ -12,12 +12,12 @@ int main(int argc, char **argv)
 {
     string filename = argv[1];
 
-    std::vector<string> lines;
-    std::ifstream file(filename);
+    vector<string> lines;
+    ifstream file(filename);
     if (file.is_open())
     {
-        std::string line;
-        while (std::getline(file, line))
+        string line;
+        while (getline(file, line))
         {
             lines.push_back(line);
         }
@@ -26,8 +26,8 @@ int main(int argc, char **argv)
     file.close();
 
     // Split the lines into 2 sections
-    std::vector<std::string> section1;
-    std::vector<std::string> section2;
+    vector<string> section1;
+    vector<string> section2;
 
     bool section1_done = false;
     for (int i = 0; i < lines.size(); i++)
@@ -52,14 +52,14 @@ int main(int argc, char **argv)
     string crates = section1[section1.size() - 1];
 
     // Trim whitespace
-    crates.erase(std::remove(crates.begin(), crates.end(), ' '), crates.end());
+    crates.erase(remove(crates.begin(), crates.end(), ' '), crates.end());
 
     int num_crates = crates[crates.size() - 1] - '0';
 
-    std::vector<std::vector<string>> crates_vec;
+    vector<vector<string>> crates_vec;
     for (int i = 0; i < num_crates; i++)
     {
-        std::vector<string> crate;
+        vector<string> crate;
         crates_vec.push_back(crate);
     }
 
@@ -87,14 +87,14 @@ int main(int argc, char **argv)
             }
 
             // Add the crate to the correct crate
-            crates_vec[current_crate].push_back(std::string(1, line[j]));
+            crates_vec[current_crate].push_back(string(1, line[j]));
         }
     }
 
     // Reverse the crates
     for (int i = 0; i < crates_vec.size(); i++)
     {
-        std::reverse(crates_vec[i].begin(), crates_vec[i].end());
+        reverse(crates_vec[i].begin(), crates_vec[i].end());
     }
 
     // Get instructions
@@ -106,12 +106,12 @@ int main(int argc, char **argv)
         line.erase(0, 5);
 
         // Split on "from"
-        std::vector<std::string> parts;
-        std::string delimiter = " from ";
+        vector<string> parts;
+        string delimiter = " from ";
 
         size_t pos = 0;
-        std::string token;
-        while ((pos = line.find(delimiter)) != std::string::npos)
+        string token;
+        while ((pos = line.find(delimiter)) != string::npos)
         {
             token = line.substr(0, pos);
             // From found, remove from line
@@ -145,7 +145,7 @@ int main(int argc, char **argv)
 
         // Part II
 
-        std::vector<string> temp_crate;
+        vector<string> temp_crate;
 
         for (int j = 0; j < num_crates_to_move; j++)
         {
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
         }
 
         // Reverse temp crate
-        std::reverse(temp_crate.begin(), temp_crate.end());
+        reverse(temp_crate.begin(), temp_crate.end());
 
         // Add temp crate to destination
         for (int j = 0; j < temp_crate.size(); j++)
@@ -165,7 +165,7 @@ int main(int argc, char **argv)
     }
 
     // Get last element of each crate
-    std::vector<string> last_elements;
+    vector<string> last_elements;
     for (int i = 0; i < crates_vec.size(); i++)
     {
         last_elements.push_back(crates_vec[i].back());
@@ -174,8 +174,8 @@ int main(int argc, char **argv)
     // Print the last elements
     for (int i = 0; i < last_elements.size(); i++)
     {
-        std::cout << last_elements[i];
+        cout << last_elements[i];
     }
 
-    std::cout << std::endl;
+    cout << endl;
 }

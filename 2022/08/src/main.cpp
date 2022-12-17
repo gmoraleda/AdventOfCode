@@ -11,20 +11,20 @@ int main(int argc, char **argv)
 {
     string filename = argv[1];
 
-    std::ifstream file(filename);
+    ifstream file(filename);
     if (file.is_open())
     {
-        std::string line;
+        string line;
         // Grid of numbers
-        std::vector<std::vector<int>> grid;
+        vector<vector<int>> grid;
 
-        while (std::getline(file, line))
+        while (getline(file, line))
         {
             // For each number in the line, add it to the grid
-            std::vector<int> row;
+            vector<int> row;
             for (int i = 0; i < line.length(); i++)
             {
-                row.push_back(std::stoi(line.substr(i, 1)));
+                row.push_back(stoi(line.substr(i, 1)));
             }
             grid.push_back(row);
         }

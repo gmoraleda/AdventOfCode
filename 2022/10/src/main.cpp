@@ -7,8 +7,6 @@
 
 using namespace std;
 
-set<string> visited;
-
 int main(int argc, char **argv)
 {
     string filename = argv[1];

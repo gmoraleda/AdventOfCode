@@ -11,23 +11,23 @@ int main(int argc, char **argv)
 {
     string filename = argv[1];
 
-    std::ifstream file(filename);
+    ifstream file(filename);
     if (file.is_open())
     {
-        std::string line;
+        string line;
 
-        while (std::getline(file, line))
+        while (getline(file, line))
         {
-            std::vector<string> marker;
+            vector<string> marker;
 
             for (int i = 0; i < line.length(); i++)
             {
                 string e = line.substr(i, 1);
 
-                if (std::find(marker.begin(), marker.end(), e) != marker.end())
+                if (find(marker.begin(), marker.end(), e) != marker.end())
                 {
 
-                    while (marker.size() > 0 && std::find(marker.begin(), marker.end(), e) != marker.end())
+                    while (marker.size() > 0 && find(marker.begin(), marker.end(), e) != marker.end())
                     {
                         marker.erase(marker.begin());
                     }

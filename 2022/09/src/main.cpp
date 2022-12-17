@@ -64,13 +64,13 @@ int main(int argc, char **argv)
 {
     string filename = argv[1];
 
-    std::ifstream file(filename);
+    ifstream file(filename);
     if (file.is_open())
     {
-        std::string line;
-        std::vector<string> instructions;
+        string line;
+        vector<string> instructions;
 
-        while (std::getline(file, line))
+        while (getline(file, line))
         {
             instructions.push_back(line);
         }
