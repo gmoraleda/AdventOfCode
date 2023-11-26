@@ -6,7 +6,17 @@ def log(obj)
   Pry::ColorPrinter.pp(obj)
 end
 
-file = File.open('12/input')
+def hash_to_array(hash)
+  board = Array.new(10) { Array.new(10) }
+  hash.each do |key, value|
+    i = key[0].to_i
+    j = key[1].to_i
+    board[i][j] = value
+  end
+  log(board)
+end
+
+file = File.open('11/input')
 board =
   file
     .readlines
